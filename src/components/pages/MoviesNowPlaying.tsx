@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFetch } from '../hooks/useFetch';
 
-interface MoviesNowPlaying {
+type MoviesNowPlaying = {
   adult: boolean;
   backdrop_path: string;
   genre_ids: [];
@@ -16,10 +16,10 @@ interface MoviesNowPlaying {
   video: boolean;
   vote_average: number;
   vote_count: number;
-}
+};
 
 export default function MoviewNowPlaying() {
-  const { data } = useFetch(
+  const { data } = useFetch<MoviesNowPlaying>(
     `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}`
   );
   console.log('movies now playing', data);

@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography } from '@mui/material';
 export default function NavBar() {
   return (
     <AppBar position='static'>
-      <Toolbar variant='dense'>
+      <Toolbar sx={{ backgroundColor: 'black' }} variant='dense'>
         <Typography
           variant='h6'
           color='inherit'

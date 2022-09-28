@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useFetch } from '../hooks/useFetch';
 import Box from '@mui/material/Box';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import { Grid, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Rating from '@mui/material/Rating';
+import Button from '@mui/material/Button';
 
 type MoviesNowPlaying = {
   adult: boolean;
@@ -30,39 +31,76 @@ type MoviesNowPlayingData = {
 };
 
 export default function MoviewNowPlaying() {
-  const { data } = useFetch<MoviesNowPlayingData>(
-    `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}`
+  const [page, setPage] = useState(1);
+  const [allMovies, setAllMovies] = useState<MoviesNowPlaying[]>([]);
+
+  const onSuccess = useCallback((res: MoviesNowPlayingData) => {
+    setAllMovies((prev) => [...prev, ...res.results]);
+  }, []);
+
+  useEffect(() => {
+    setAllMovies([]);
+  }, []);
+
+  const { data, loading } = useFetch<MoviesNowPlayingData>(
+    `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&page=${page}`,
+    onSuccess
   );
-  console.log('movies now playing', data);
+
+  console.log('movies now playing', allMovies);
+
+  const fetchMoreMovies = useCallback(() => {
+    setPage((prev) => prev + 1);
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={1} sx={{ padding: 1, backgroundColor: 'lightgrey' }}>
-        {data?.results.map((movie) => (
-          <Grid key={movie.id} item xs={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray'
+      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          my: 2
+        }}>
+        {allMovies?.map((movie) => (
+          <Box key={movie.id} sx={{ border: 1, m: 1, boxShadow: 10 }}>
+            <Box sx={{ padding: 0.5, width: 258 }}>
+              <Typography>{movie.original_title}</Typography>
+            </Box>
             <img
               src={`https://image.tmdb.org/t/p/w400${movie?.poster_path}?`}
-              // srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
               alt={movie?.title}
               style={{ height: 400 }}
               loading="lazy"
             />
-            <Typography>Test</Typography>
-          </Grid>
+            <Stack spacing={0.5}>
+              <Rating
+                size="small"
+                name="half-rating-read"
+                defaultValue={movie?.vote_average}
+                precision={0.5}
+                readOnly
+                max={10}
+              />
+            </Stack>
+          </Box>
         ))}
-      </Grid>
+      </Box>
+      <Box sx={{ justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+        <Button variant="contained" onClick={fetchMoreMovies}>
+          Load more movies
+        </Button>
+      </Box>
     </Box>
-    // <Grid container spacing={2}>
-    //   {data?.results.map((movie) => (
-    //               <Grid item xs={8}>
-    //               <img
-    //                 src={`https://image.tmdb.org/t/p/w400${movie?.poster_path}?`}
-    //                 // srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-    //                 alt={movie?.title}
-    //                 loading="lazy"
-    //                 />
-    //                 <Grid/>
-    //   ))}
-    // </Grid>
   );
 }

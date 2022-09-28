@@ -83,6 +83,7 @@ export default function MoviewNowPlaying() {
               style={{ height: 400 }}
               loading="lazy"
             />
+            <Typography>Release Date: {movie.release_date}</Typography>
             <Stack spacing={0.5}>
               <Rating
                 size="small"

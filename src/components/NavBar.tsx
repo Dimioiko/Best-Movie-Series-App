@@ -3,10 +3,13 @@ import { AppBar, Toolbar } from '@mui/material';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log('event', event.currentTarget);
     setAnchorEl(event.currentTarget);
@@ -58,7 +61,9 @@ export default function NavBar() {
             MenuListProps={{
               'aria-labelledby': 'basic-button'
             }}>
-            <MenuItem onClick={handleClose}>MoviesNowPlaying</MenuItem>
+            <MenuItem onClick={() => navigate('/PopularSeries')}>
+              MoviesNowPlaying
+            </MenuItem>
             <MenuItem onClick={handleClose}>My account</MenuItem>
             <MenuItem onClick={handleClose}>Logout</MenuItem>
           </Menu>
